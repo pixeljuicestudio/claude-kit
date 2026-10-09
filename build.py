@@ -278,7 +278,11 @@ def _build(live: bool):
         print("  (no notion_rows.json - reconcile tab disabled)")
 
     payload["live"] = live
-    return TEMPLATE.replace("__PAYLOAD__", json.dumps(payload, ensure_ascii=False)), OUT
+    # "</" is escaped so a prompt or skill whose text contains </script> cannot
+    # close the tag it is embedded in and run as page script. JSON reads <\/
+    # back as </, so the data is unchanged.
+    blob = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
+    return TEMPLATE.replace("__PAYLOAD__", blob), OUT
 
 
 TEMPLATE = r"""<!doctype html>
@@ -953,7 +957,7 @@ const TIERS = {
   off   : ['Off',    'Not loaded at all. Paste its path to use it. Costs nothing.']
 };
 
-const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- tags: server-persisted via /api/tag, localStorage is a mirror ----------
    tags.json (seeded into ITEMS by build.py) is the source of truth once the

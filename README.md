@@ -2,7 +2,13 @@
 
 **What you have in Claude Code, and whether you can reach it.**
 
-Kit is a small local web page for people who have collected a lot of Claude
+A skill file sitting in a folder is not a skill Claude can use. It may belong to
+a plugin that is not enabled, be set to Manual so it never fires on its own, or
+be shadowed by another with the same name. Kit shows you the difference:
+**every skill, prompt, hook and tool you have, whether a session can actually
+reach it, and when it last fired.**
+
+It is a small local web page for people who have collected a lot of Claude
 Code skills, prompts, hooks and scripts and have lost track of them. It scans
 your `~/.claude` folder (and, optionally, a folder of your own tools), shows
 everything on one searchable page, and answers the questions a plain file
@@ -12,8 +18,34 @@ machine, reads only local files, and needs nothing but Python.
 
 ![Kit screenshot](docs/screenshot.png)
 
-Five tabs, because each answers a different question and none can answer
-another's:
+## Quick start (about a minute)
+
+```sh
+git clone https://github.com/pixeljuicestudio/claude-kit.git
+cd claude-kit
+python serve.py
+```
+
+Your browser opens at **http://127.0.0.1:8712/** showing what Claude Code has
+on this machine. Leave the terminal running while you use the page; Ctrl-C
+stops it. On Windows you can double-click `SKILLS.bat`; on macOS/Linux,
+`./kit.sh`.
+
+New to skills, or the Skills tab is empty? Copy the example in and reload:
+
+```sh
+cp -r examples/skills/hello-kit ~/.claude/skills/
+```
+
+It appears as **Auto**: Claude will load it whenever you ask "is Kit
+working?". Flip it to Manual on its card and it only runs as `/hello-kit`.
+
+**What Kit is not:** an agent framework. It does not make Claude write better
+code; it shows you what your setup actually gives Claude, so you can fix it.
+
+## The five tabs
+
+Each answers a different question and none can answer another's:
 
 | Tab | The question it answers |
 |---|---|
@@ -36,20 +68,10 @@ Made by [Pixel Juice Studio](https://github.com/pixeljuicestudio) ·
 Works on Windows, macOS and Linux. A few Tools-tab facets (desktop shortcuts,
 Task Scheduler) are Windows facts and read *n/a* elsewhere.
 
-## Quick start
-
-```sh
-git clone https://github.com/pixeljuicestudio/claude-kit.git
-cd claude-kit
-python serve.py
-```
-
-Then open **http://127.0.0.1:8712/** (it opens by itself). Leave the terminal
-running while you use the page; Ctrl-C stops it.
+## Running options
 
 - `python serve.py --port 8800` (or `KIT_PORT=8800`) for another port.
 - `python serve.py --no-browser` to not open a tab.
-- On Windows you can double-click `SKILLS.bat`; on macOS/Linux, `./kit.sh`.
 
 The server listens on 127.0.0.1 only. Opening `skills.html` straight from disk
 (`python build.py` writes one) gives a read-only copy: everything renders, but
@@ -241,10 +263,12 @@ network.
 
 Read-only against your skills apart from one change: the Auto/Manual flag in a
 `SKILL.md` under `~/.claude/skills`. Kit never moves a folder or writes
-`settings.json`. The server binds to 127.0.0.1; every write endpoint validates
-the name against the scanned inventory; **Launch** and **open reference** take
-a *name* from the page and resolve the path server-side, never a path from the
-request, and re-check that it is inside the configured folder.
+`settings.json`. The server binds to 127.0.0.1 and answers only its own page
+(other websites open in your browser are refused); every write endpoint
+validates the name against the scanned inventory; **Launch** and **open
+reference** take a *name* from the page and resolve the path server-side, never
+a path from the request, and re-check that it is inside the configured folder.
+Full detail, and how to report a problem: [SECURITY.md](SECURITY.md).
 
 ## Command-line tools
 
@@ -274,8 +298,10 @@ every invariant holds. Run them all:
 for t in test_*.py; do python "$t" || echo "FAILED: $t"; done
 ```
 
-The suites that depend on configuration (tools, running, render) build their
-own temporary fixtures, so they pass on a fresh machine. `test_render.py`
+The tools and running suites build their own temporary fixtures, so they pass
+on a fresh machine. `test_hooks.py` and `test_render.py` check a real install:
+they need at least one registered hook and one skill. `test_security.py`
+starts a throwaway server and checks it refuses other websites. `test_render.py`
 needs Node: it runs the page's emitted JavaScript against a DOM stub and calls
 every draw function on every sort option, because `node --check` and the
 Python suites are both blind to a runtime `ReferenceError` - one once left the

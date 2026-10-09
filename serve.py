@@ -95,7 +95,26 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(blob)
 
+    def _trusted(self) -> bool:
+        """Only Kit's own page may talk to Kit.
+
+        Binding to 127.0.0.1 keeps other machines out, but not other web
+        pages: any site open in the same browser can POST to localhost, and
+        a DNS-rebinding site can even read the replies. So the Host header
+        must name this server (defeats rebinding), and a browser request
+        that carries an Origin must come from this server's own page
+        (defeats cross-site POSTs). Non-browser clients send no Origin and
+        are already running on this machine.
+        """
+        ours = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
+        if self.headers.get("Host", "") not in ours:
+            return False
+        origin = self.headers.get("Origin")
+        return origin is None or origin in {f"http://{h}" for h in ours}
+
     def do_GET(self):
+        if not self._trusted():
+            return self._send(403, {"error": "forbidden"})
         if self.path in ("/", "/index.html"):
             html = build.render_html(live=True)
             self._send(200, html.encode("utf-8"), "text/html; charset=utf-8")
@@ -660,6 +679,11 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(200, {"ok": True, "launched": entry})
 
     def do_POST(self):
+        if not self._trusted():
+            # Read the body anyway: closing on unread bytes resets the
+            # connection on Windows and the caller sees an abort, not a 403.
+            self.rfile.read(int(self.headers.get("Content-Length", 0) or 0))
+            return self._send(403, {"ok": False, "error": "forbidden"})
         if self.path == "/api/launch":
             return self._launch()
         if self.path == "/api/fav":
