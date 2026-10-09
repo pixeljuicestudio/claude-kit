@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Kit",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["serve.py", "--no-browser"],
+      "port": 8712
+    }
+  ]
+}

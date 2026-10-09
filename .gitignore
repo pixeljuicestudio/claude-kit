@@ -1,0 +1,44 @@
+# Generated, not authored — rebuilt by build.py on every run.
+skills.html
+__pycache__/
+*.pyc
+
+# Your configuration. Copy the *.example.json files and edit them.
+kit.config.json
+tools.json
+
+# Derived caches. All regenerable from the transcripts or the disk scan, and
+# all machine-specific, so versioning them only creates conflicts.
+#   usage.json          usage.py    — invocation counts from ~/.claude/projects
+#   program_usage.json  programs.py — run counts, same corpus, Bash commands only
+#   born.json           born.py     — earliest creation date per skill
+#   candidates*.json    replay.py   — candidate lists
+#   guard_baseline.json guard.py    — snapshot taken just before an edit
+#   prompts.json        prompts.py  — the optional Notion cache
+#
+# NOTE: a trailing comment is NOT a comment in .gitignore — the whole line is
+# the pattern, so `usage.json  # cache` matches nothing and the file gets
+# committed anyway. Comments go on their own line, always.
+*usage*.json
+born.json
+candidates*.json
+guard_baseline.json
+prompts.json
+notion_rows.json
+
+# Your personal state, written by the page through serve.py: stars, tags,
+# groups. Every one is created on first write and read as empty when missing.
+favourites.json
+*_favourites.json
+*tags.json
+groups.json
+
+# Launcher activity markers (runs_dir default).
+.runs/
+
+# Atomic-write temp files.
+*.tmp
+*.json.tmp
+
+# Backups mark_launchers.py leaves beside a patched .bat.
+*.bak-kit

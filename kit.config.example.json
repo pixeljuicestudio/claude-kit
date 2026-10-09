@@ -1,0 +1,15 @@
+{
+  "_comment": "Copy to kit.config.json (gitignored) and edit. Every key is optional; delete what you do not use. Paths may use ~ and are relative to this folder otherwise.",
+  "tools_root": "~/projects/tools",
+  "project_settings": ["~/projects/my-project/.claude/settings.json"],
+  "runs_dir": ".runs",
+  "extra_skill_dirs": ["~/projects/my-skills-repo/skills"],
+  "prompts_dir": "prompts",
+  "reference_dir": null,
+  "transcripts_project": null,
+  "mode_sync_script": null,
+  "port": 8712,
+  "notion": {
+    "db_id": null
+  }
+}

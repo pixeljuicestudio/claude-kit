@@ -1,0 +1,19 @@
+{
+  "_comment": "Copy to tools.json (gitignored). 'roster' = folders under tools_root that are tools you would want to find again. 'not_tools' = folders you looked at and rejected, so they stop counting as 'unlisted'. 'connect' and 'nested_launchers' are optional.",
+  "roster": [
+    "my-video-pipeline",
+    "notes-exporter",
+    "mcp-bridge"
+  ],
+  "not_tools": [
+    "_archive",
+    "_scratch",
+    "node_modules"
+  ],
+  "connect": {
+    "mcp-bridge": {"tcp": 9876}
+  },
+  "nested_launchers": {
+    "my-video-pipeline/picker/picker.bat": "my-video-pipeline"
+  }
+}
