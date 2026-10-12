@@ -1,4 +1,8 @@
 @echo off
+REM --- Kit activity marker: lets a Tools tab light up when you launch this.
+REM     Acts only if a sibling _engine\runs folder exists; does nothing anywhere else.
+if exist "%~dp0..\_engine\runs\" echo.>"%~dp0..\_engine\runs\claude-kit.run" 2>nul
+
 REM Kit. Serves the page so the Auto/Manual toggles, stars and tags can write.
 REM Leave this window open while you use it; Ctrl-C or close it when done.
 REM Extra arguments are passed through, e.g.  SKILLS.bat --port 8800
